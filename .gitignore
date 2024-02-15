@@ -12,5 +12,8 @@ docs/
 
 # Dotenv file
 .env
+
 deploy.bat
 deploy2.bat
+
+node_modules

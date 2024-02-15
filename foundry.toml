@@ -5,4 +5,8 @@ libs = ["lib"]
 solc = "0.8.24"
 fmt.tab_width = 2
 
+remappings = [
+  "@openzeppelin/contracts=node_modules/@openzeppelin/contracts/"
+]
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
