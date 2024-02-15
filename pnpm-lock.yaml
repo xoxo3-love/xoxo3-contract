@@ -8,9 +8,16 @@ dependencies:
   '@openzeppelin/contracts':
     specifier: ^5.0.1
     version: 5.0.1
+  forge-std:
+    specifier: ^1.1.2
+    version: 1.1.2
 
 packages:
 
   /@openzeppelin/contracts@5.0.1:
     resolution: {integrity: sha512-yQJaT5HDp9hYOOp4jTYxMsR02gdFZFXhewX5HW9Jo4fsqSVqqyIO/xTHdWDaKX5a3pv1txmf076Lziz+sO7L1w==}
+    dev: false
+
+  /forge-std@1.1.2:
+    resolution: {integrity: sha512-Wfb0iAS9PcfjMKtGpWQw9mXzJxrWD62kJCUqqLcyuI0+VRtJ3j20XembjF3kS20qELYdXft1vD/SPFVWVKMFOw==}
     dev: false
