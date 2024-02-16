@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/access/ownable.sol';
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/ownable.sol";
 // import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-pragma solidity 0.8.24; 
+pragma solidity 0.8.24;
 
 contract Xoxo3 is ERC20, Ownable {
   // using SafeMath for uint256;
@@ -36,7 +36,7 @@ contract Xoxo3 is ERC20, Ownable {
     //交易收取手续费
     uint256 txFee = amount * txFeeRatio / 1000;
     //燃烧掉费用
-    uint256 burnAmount = amount* burnRatio / 1000;
+    uint256 burnAmount = amount * burnRatio / 1000;
     //真实金额
     uint256 realAmount = amount - txFee - burnAmount;
 
