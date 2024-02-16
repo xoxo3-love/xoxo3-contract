@@ -19,41 +19,39 @@ contract Xoxo3 is Xoxo3Base {
     uint256 timestamp;
   }
 
-  struct UserIncome {
-    uint256 tokenCount;
-    uint256 totalTime;
-  }
-
   mapping(address => User) ethUserMap;
 
   function pledgeETH() public payable {
     ethUserMap[msg.sender] = User({amount: msg.value, timestamp: block.timestamp});
   }
 
-  function queryXOXO3WithPledgeETH() public view returns (UserIncome memory) {
+  function queryXOXO3WithPledgeETH() public view returns (uint256, uint256) {
     User memory user = ethUserMap[msg.sender];
     if (user.amount == 0) {
-      return UserIncome({tokenCount: 0, totalTime: 0});
+      return (0, 0);
     }
 
-    uint256 allTime = block.timestamp - user.timestamp;
+    uint256 totalTime = block.timestamp - user.timestamp;
     // 小于一天，不分红
-    // if (allTime <= 86400) {
+    // if (totalTime <= 86400) {
     //   return 0;
     // }
 
-    uint256 tokenCount = allTime * 31709792 * 50;
-    return UserIncome({tokenCount: tokenCount, totalTime: allTime});
+    uint256 tokenCount = totalTime * 31709792 * 50;
+    return (tokenCount, totalTime);
   }
 
-  function withdrawalETH() public virtual returns (UserIncome memory) {
-    UserIncome memory userIncome = this.queryXOXO3WithPledgeETH();
-    if (userIncome.tokenCount == 0) {
-      return userIncome;
+  function withdrawalETH() public virtual returns (uint256, uint256) {
+    uint256 tokenCount;
+    uint256 totalTime;
+    (tokenCount, totalTime) = this.queryXOXO3WithPledgeETH();
+
+    if (tokenCount == 0) {
+      return (tokenCount, totalTime);
     }
 
-    _mint(msg.sender, userIncome.tokenCount);
-    return userIncome;
+    _mint(msg.sender, tokenCount);
+    return (tokenCount, totalTime);
   }
 
   // 1 XOXO3 = $1 = 20 USDT/一年。
