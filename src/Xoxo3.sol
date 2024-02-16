@@ -30,6 +30,10 @@ contract Xoxo3 is Xoxo3Base {
     emit EventPledgeETH(msg.sender, msg.value, block.timestamp);
   }
 
+  function calcIncome(uint256 totalTime, uint256 amount, uint256 yield) public pure returns (uint256) {
+    return totalTime * 31709792 * yield * amount / (1 ether);
+  }
+
   function queryXOXO3WithPledgeETH() public view returns (uint256, uint256) {
     User memory user = ethUserMap[msg.sender];
     if (user.amount == 0) {
@@ -42,7 +46,7 @@ contract Xoxo3 is Xoxo3Base {
     //   return 0;
     // }
 
-    uint256 tokenCount = totalTime * 31709792 * 50 * user.amount / (1 ether);
+    uint256 tokenCount = calcIncome(totalTime, user.amount, 50);
     return (tokenCount, totalTime);
   }
 
