@@ -51,13 +51,11 @@ contract Xoxo3 is Xoxo3Base {
 
     emit EventWithdrawalETH(msg.sender, tokenCount, totalTime);
 
-    if (tokenCount == 0) {
-      return (tokenCount, totalTime);
-    }
-
     User memory user = ethUserMap[msg.sender];
     payable(msg.sender).transfer(user.amount);
-    _mint(msg.sender, tokenCount);
+    if (tokenCount > 0) {
+      _mint(msg.sender, tokenCount);
+    }
 
     return (tokenCount, totalTime);
   }
