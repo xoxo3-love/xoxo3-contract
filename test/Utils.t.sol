@@ -13,9 +13,8 @@ contract Xoxo3Test is Test {
 
   function test_Increment() public view {
     uint256 result = utils.calcIncome(31536000, 1 ether, 50);
-    uint256 min = 5 * (1 ether) / 100;
-    uint256 max = 6 * (1 ether) / 100;
-    assert(result > min);
-    assert(result < max);
+    uint256 count = 5 * (1 ether) / 100;
+    assert(result > count * 9 / 10);
+    assert(result < count * 11 / 10);
   }
 }
