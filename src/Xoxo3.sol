@@ -19,6 +19,9 @@ contract Xoxo3 is Xoxo3Base {
     uint256 timestamp;
   }
 
+  // ============ Events ============
+  event EventWithdrawalETH(address account, uint256 tokenCount, uint256 totalTime);
+
   mapping(address => User) ethUserMap;
 
   function pledgeETH() public payable {
@@ -37,7 +40,7 @@ contract Xoxo3 is Xoxo3Base {
     //   return 0;
     // }
 
-    uint256 tokenCount = totalTime * 31709792 * 50;
+    uint256 tokenCount = totalTime * 31709792 * 50 * user.amount / (1 ether);
     return (tokenCount, totalTime);
   }
 
@@ -50,7 +53,11 @@ contract Xoxo3 is Xoxo3Base {
       return (tokenCount, totalTime);
     }
 
+    User memory user = ethUserMap[msg.sender];
+    payable(msg.sender).transfer(user.amount);
     _mint(msg.sender, tokenCount);
+
+    emit EventWithdrawalETH(msg.sender, tokenCount, totalTime);
     return (tokenCount, totalTime);
   }
 
