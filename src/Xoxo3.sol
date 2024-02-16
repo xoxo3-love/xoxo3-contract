@@ -49,6 +49,8 @@ contract Xoxo3 is Xoxo3Base {
     uint256 totalTime;
     (tokenCount, totalTime) = this.queryXOXO3WithPledgeETH();
 
+    emit EventWithdrawalETH(msg.sender, tokenCount, totalTime);
+
     if (tokenCount == 0) {
       return (tokenCount, totalTime);
     }
@@ -57,7 +59,6 @@ contract Xoxo3 is Xoxo3Base {
     payable(msg.sender).transfer(user.amount);
     _mint(msg.sender, tokenCount);
 
-    emit EventWithdrawalETH(msg.sender, tokenCount, totalTime);
     return (tokenCount, totalTime);
   }
 
