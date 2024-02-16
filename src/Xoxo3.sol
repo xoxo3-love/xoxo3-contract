@@ -31,8 +31,8 @@ contract Xoxo3 is Xoxo3Base, Utils {
     emit EventPledgeETH(msg.sender, msg.value, block.timestamp);
   }
 
-  function queryXOXO3WithPledgeETH() public view returns (uint256, uint256) {
-    User memory user = ethUserMap[msg.sender];
+  function queryXOXO3WithPledgeETH(address account) public view returns (uint256, uint256) {
+    User memory user = ethUserMap[account];
     if (user.amount == 0) {
       return (0, 0);
     }
@@ -50,7 +50,7 @@ contract Xoxo3 is Xoxo3Base, Utils {
   function withdrawalETH() public virtual returns (uint256, uint256) {
     uint256 tokenCount;
     uint256 totalTime;
-    (tokenCount, totalTime) = this.queryXOXO3WithPledgeETH();
+    (tokenCount, totalTime) = this.queryXOXO3WithPledgeETH(msg.sender);
 
     emit EventWithdrawalETH(msg.sender, tokenCount, totalTime);
 
