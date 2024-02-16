@@ -6,59 +6,50 @@ import "@openzeppelin/contracts/access/ownable.sol";
 import "./IBlast.sol";
 import "./IERC20Rebasing.sol";
 import "./BlastBase.sol";
+import "./Xoxo3Base.sol";
 
 pragma solidity 0.8.24;
 
-contract Xoxo3 is ERC20, BlastBase {
-  address public feeAccount;
+contract Xoxo3 is Xoxo3Base {
+  // 1 eth / 31536000 秒        = 31709791983
+  // 1 eth / 31536000 秒 / 1000 = 31709792
 
-  uint256 public txFeeRatio;
-  uint256 public burnRatio;
-
-  // constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) Ownable(msg.sender) {
-  constructor() ERC20("Xoxo3.love Token", "XOXO3") {
-    feeAccount = msg.sender;
-    txFeeRatio = 1;
-    burnRatio = 1;
+  struct User {
+    uint256 amount;
+    uint256 timestamp;
   }
 
-  function mint(address account, uint256 amount) external onlyOwner {
-    _mint(account, amount);
+  mapping(address => User) ethUserMap;
+
+  function pledgeETH() public payable {
+    ethUserMap[msg.sender] = User({amount: msg.value, timestamp: block.timestamp});
   }
 
-  function burn(address account, uint256 burnAmount) external onlyOwner {
-    _burn(account, burnAmount);
-  }
-
-  function transfer(address to, uint256 amount) public virtual override returns (bool) {
-    //查询余额
-    _spendAllowance(msg.sender, to, amount);
-
-    //交易收取手续费
-    uint256 txFee = amount * txFeeRatio / 1000;
-    //燃烧掉费用
-    uint256 burnAmount = amount * burnRatio / 1000;
-    //真实金额
-    uint256 realAmount = amount - txFee - burnAmount;
-
-    _transfer(msg.sender, to, realAmount);
-    if (txFee > 0) {
-      _transfer(msg.sender, feeAccount, txFee);
+  function queryXOXO3WithPledgeETH() public view returns (uint256) {
+    User memory user = ethUserMap[msg.sender];
+    if (user.amount == 0) {
+      return 0;
     }
-    if (burnAmount > 0) {
-      _burn(msg.sender, burnAmount);
+
+    uint256 allTime = block.timestamp - user.timestamp;
+    // 小于一天，不分红
+    // if (allTime <= 86400) {
+    //   return 0;
+    // }
+
+    uint256 tokenCount = allTime * 31709792 * 50;
+    return tokenCount;
+  }
+
+  function withdrawalETH() public virtual returns (uint256) {
+    uint256 tokenCount = this.queryXOXO3WithPledgeETH();
+    if (tokenCount == 0) {
+      return tokenCount;
     }
-    return true;
+
+    _mint(msg.sender, tokenCount);
+    return tokenCount;
   }
 
-  //设置地址和交易费比例
-  function setFeeAddress(address _feeAccount, uint256 _txFeeRatio, uint256 _burnRatio) external onlyOwner {
-    feeAccount = _feeAccount;
-    txFeeRatio = _txFeeRatio;
-    burnRatio = _burnRatio;
-  }
-
-  function setFeeAddress(address _newOwnerAccount) external onlyOwner {
-    _transferOwnership(_newOwnerAccount);
-  }
+  // 1 XOXO3 = $1 = 20 USDT/一年。
 }
