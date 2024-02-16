@@ -2,14 +2,19 @@
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/ownable.sol";
-// import '@openzeppelin/contracts/utils/math/SafeMath.sol';
+
+import "./IBlast.sol";
+import "./IERC20Rebasing.sol";
 
 pragma solidity 0.8.24;
 
 contract Xoxo3 is ERC20, Ownable {
-  // using SafeMath for uint256;
+  IBlast public constant BLAST = IBlast(0x4300000000000000000000000000000000000002);
+  IERC20Rebasing public constant USDB = IERC20Rebasing(0x4200000000000000000000000000000000000022);
+  IERC20Rebasing public constant WETH = IERC20Rebasing(0x4200000000000000000000000000000000000023);
 
   address public feeAccount;
+  address public governor;
 
   uint256 public txFeeRatio;
   uint256 public burnRatio;
@@ -19,6 +24,7 @@ contract Xoxo3 is ERC20, Ownable {
     feeAccount = msg.sender;
     txFeeRatio = 1;
     burnRatio = 1;
+    _setGovernor(msg.sender);
   }
 
   function mint(address account, uint256 amount) external onlyOwner {
@@ -59,5 +65,19 @@ contract Xoxo3 is ERC20, Ownable {
 
   function setFeeAddress(address _newOwnerAccount) external onlyOwner {
     _transferOwnership(_newOwnerAccount);
+  }
+
+  function _setGovernor(address _newGovernor) internal virtual {
+    governor = _newGovernor;
+    BLAST.configureClaimableGas();
+    BLAST.configureClaimableYield();
+
+    BLAST.configureGovernor(_newGovernor);
+    USDB.configure(YieldMode.CLAIMABLE);
+    WETH.configure(YieldMode.CLAIMABLE);
+  }
+
+  function setGovernor(address _newGovernor) external onlyOwner {
+    _setGovernor(_newGovernor);
   }
 }
