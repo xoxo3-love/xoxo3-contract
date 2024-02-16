@@ -20,12 +20,14 @@ contract Xoxo3 is Xoxo3Base {
   }
 
   // ============ Events ============
+  event EventPledgeETH(address account, uint256 amount, uint256 startTimestamp);
   event EventWithdrawalETH(address account, uint256 tokenCount, uint256 totalTime);
 
   mapping(address => User) ethUserMap;
 
   function pledgeETH() public payable {
     ethUserMap[msg.sender] = User({amount: msg.value, timestamp: block.timestamp});
+    emit EventPledgeETH(msg.sender, msg.value, block.timestamp);
   }
 
   function queryXOXO3WithPledgeETH() public view returns (uint256, uint256) {
