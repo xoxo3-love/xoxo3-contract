@@ -19,16 +19,21 @@ contract Xoxo3 is Xoxo3Base {
     uint256 timestamp;
   }
 
+  struct UserIncome {
+    uint256 tokenCount;
+    uint256 totalTime;
+  }
+
   mapping(address => User) ethUserMap;
 
   function pledgeETH() public payable {
     ethUserMap[msg.sender] = User({amount: msg.value, timestamp: block.timestamp});
   }
 
-  function queryXOXO3WithPledgeETH() public view returns (uint256) {
+  function queryXOXO3WithPledgeETH() public view returns (UserIncome memory) {
     User memory user = ethUserMap[msg.sender];
     if (user.amount == 0) {
-      return 0;
+      return UserIncome({tokenCount: 0, totalTime: 0});
     }
 
     uint256 allTime = block.timestamp - user.timestamp;
@@ -38,17 +43,17 @@ contract Xoxo3 is Xoxo3Base {
     // }
 
     uint256 tokenCount = allTime * 31709792 * 50;
-    return tokenCount;
+    return UserIncome({tokenCount: tokenCount, totalTime: allTime});
   }
 
-  function withdrawalETH() public virtual returns (uint256) {
-    uint256 tokenCount = this.queryXOXO3WithPledgeETH();
-    if (tokenCount == 0) {
-      return tokenCount;
+  function withdrawalETH() public virtual returns (UserIncome memory) {
+    UserIncome memory userIncome = this.queryXOXO3WithPledgeETH();
+    if (userIncome.tokenCount == 0) {
+      return userIncome;
     }
 
-    _mint(msg.sender, tokenCount);
-    return tokenCount;
+    _mint(msg.sender, userIncome.tokenCount);
+    return userIncome;
   }
 
   // 1 XOXO3 = $1 = 20 USDT/一年。
