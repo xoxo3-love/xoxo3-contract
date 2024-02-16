@@ -7,10 +7,11 @@ import "./IBlast.sol";
 import "./IERC20Rebasing.sol";
 import "./BlastBase.sol";
 import "./Xoxo3Base.sol";
+import "./Utils.sol";
 
 pragma solidity 0.8.24;
 
-contract Xoxo3 is Xoxo3Base {
+contract Xoxo3 is Xoxo3Base, Utils {
   // 1 eth / 31536000 秒        = 31709791983
   // 1 eth / 31536000 秒 / 1000 = 31709792
 
@@ -28,10 +29,6 @@ contract Xoxo3 is Xoxo3Base {
   function pledgeETH() public payable {
     ethUserMap[msg.sender] = User({amount: msg.value, timestamp: block.timestamp});
     emit EventPledgeETH(msg.sender, msg.value, block.timestamp);
-  }
-
-  function calcIncome(uint256 totalTime, uint256 amount, uint256 yield) public pure returns (uint256) {
-    return totalTime * 31709792 * yield * amount / (1 ether);
   }
 
   function queryXOXO3WithPledgeETH() public view returns (uint256, uint256) {
